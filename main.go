@@ -2,6 +2,7 @@ package main
 
 import (
 	"API-gestar-bem/src/config"
+	"API-gestar-bem/src/database"
 	"API-gestar-bem/src/router"
 	"fmt"
 	"log"
@@ -9,11 +10,18 @@ import (
 )
 
 func main() {
-
+	// Carregar configurações
 	config.Carregar()
+
+	// Executar migrações do banco de dados
+	if err := database.ExecutarMigracoes(); err != nil {
+		log.Fatalf("Erro ao executar migrações: %v", err)
+	}
+
+	// Gerar rotas
 	r := router.Gerar()
 
-	fmt.Printf("Escutando na porta %d", config.Port)
+	// Iniciar servidor
+	fmt.Printf("Escutando na porta %d\n", config.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
-
 }

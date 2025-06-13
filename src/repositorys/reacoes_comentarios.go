@@ -20,9 +20,9 @@ func NewRepositoryReacoesComentarios(db *sql.DB) *ReacoesComentarios {
 // AdicionarReacao adiciona ou atualiza uma reação a um comentário
 func (repositorio ReacoesComentarios) AdicionarReacao(comentarioID, usuarioID uint64, tipoReacao string) error {
 	statement, erro := repositorio.db.Prepare(`
-		INSERT INTO reacoes_comentarios (comentario_id, usuario_id, tipo_reacao) 
+		INSERT INTO reacoes_comentarios (comentario_id, usuario_id, tipo) 
 		VALUES (?, ?, ?) 
-		ON DUPLICATE KEY UPDATE tipo_reacao = VALUES(tipo_reacao)
+		ON DUPLICATE KEY UPDATE tipo = VALUES(tipo)
 	`)
 	if erro != nil {
 		return erro
@@ -49,12 +49,12 @@ func (repositorio ReacoesComentarios) RemoverReacao(comentarioID, usuarioID uint
 func (repositorio ReacoesComentarios) BuscarReacoesPorComentario(comentarioID, usuarioID uint64) ([]model.ReacaoContador, error) {
 	linhas, erro := repositorio.db.Query(`
 		SELECT 
-			tipo_reacao,
+			tipo,
 			COUNT(*) as quantidade,
 			MAX(CASE WHEN usuario_id = ? THEN 1 ELSE 0 END) as eu_reagi
 		FROM reacoes_comentarios 
 		WHERE comentario_id = ? 
-		GROUP BY tipo_reacao
+		GROUP BY tipo
 		ORDER BY quantidade DESC
 	`, usuarioID, comentarioID)
 	if erro != nil {
@@ -76,6 +76,7 @@ func (repositorio ReacoesComentarios) BuscarReacoesPorComentario(comentarioID, u
 			return nil, erro
 		}
 
+		reacao.ComentarioID = comentarioID
 		reacao.EuReagi = euReagi == 1
 		reacoes = append(reacoes, reacao)
 	}
@@ -103,12 +104,12 @@ func (repositorio ReacoesComentarios) BuscarReacoesPorComentarios(comentarioIDs 
 	query := fmt.Sprintf(`
 		SELECT 
 			comentario_id,
-			tipo_reacao,
+			tipo,
 			COUNT(*) as quantidade,
 			MAX(CASE WHEN usuario_id = ? THEN 1 ELSE 0 END) as eu_reagi
 		FROM reacoes_comentarios 
 		WHERE comentario_id IN (%s)
-		GROUP BY comentario_id, tipo_reacao
+		GROUP BY comentario_id, tipo
 		ORDER BY comentario_id, quantidade DESC
 	`, placeholders)
 
@@ -134,6 +135,7 @@ func (repositorio ReacoesComentarios) BuscarReacoesPorComentarios(comentarioIDs 
 			return nil, erro
 		}
 
+		reacao.ComentarioID = comentarioID
 		reacao.EuReagi = euReagi == 1
 		reacoesPorComentario[comentarioID] = append(reacoesPorComentario[comentarioID], reacao)
 	}

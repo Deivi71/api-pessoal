@@ -1,19 +1,54 @@
 package model
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
-// ReacaoComentario representa uma reação a um comentário
+// ReacaoComentario representa uma reação a um comentário no sistema
 type ReacaoComentario struct {
-	ID           uint64    `json:"id,omitempty"`
-	ComentarioID uint64    `json:"comentario_id,omitempty"`
-	UsuarioID    uint64    `json:"usuario_id,omitempty"`
-	TipoReacao   string    `json:"tipo_reacao,omitempty"`
-	CriadoEm     time.Time `json:"criadoEm,omitempty"`
+	ID           string    `json:"id"`
+	Tipo         string    `json:"tipo"`
+	UsuarioID    string    `json:"usuario_id"`
+	ComentarioID string    `json:"comentario_id"`
+	CriadoEm     time.Time `json:"criado_em"`
 }
 
-// ReacaoContador representa a contagem de reações por tipo
+// ReacaoContador representa o contador de reações de um comentário
 type ReacaoContador struct {
-	TipoReacao string `json:"tipo"`
-	Quantidade uint64 `json:"quantidade"`
-	EuReagi    bool   `json:"eu_reagi"`
+	ComentarioID uint64 `json:"comentario_id"`
+	TipoReacao   string `json:"tipo_reacao"`
+	Quantidade   int    `json:"quantidade"`
+	EuReagi      bool   `json:"eu_reagi"`
+}
+
+// PrepararReacaoComentario prepara uma reação para ser salva
+func (reacao *ReacaoComentario) PrepararReacaoComentario() error {
+	if erro := reacao.validarReacaoComentario(); erro != nil {
+		return erro
+	}
+	return nil
+}
+
+// validarReacaoComentario valida os campos da reação
+func (reacao *ReacaoComentario) validarReacaoComentario() error {
+	if reacao.Tipo == "" {
+		return errors.New("o tipo da reação é obrigatório")
+	}
+
+	// Validar se o tipo é um dos tipos permitidos
+	tiposValidos := map[string]bool{
+		"like":    true,
+		"dislike": true,
+		"love":    true,
+		"hate":    true,
+		"laugh":   true,
+		"angry":   true,
+	}
+
+	if !tiposValidos[reacao.Tipo] {
+		return errors.New("tipo de reação inválido")
+	}
+
+	return nil
 }
