@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestar Bem - Rede Social de Saúde e Bem-estar</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        // Initialize theme immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; z-index: 99999; background: #ffffff; border: 2px solid #333333; border-radius: 50px; padding: 12px 20px; cursor: pointer; display: flex !important; align-items: center; gap: 8px; font-size: 1rem; font-weight: 600; color: #333333; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s ease; font-family: inherit;">
+        <span class="icon">🌙</span>
+        <span class="text">Dark Mode</span>
+    </button>
+    
+
+
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar" style="display: none;">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>Gestar Bem</span>
+            </div>
+            <div class="nav-links">
+                <button class="nav-btn" onclick="showHome()">
+                    <i class="fas fa-home"></i> Início
+                </button>
+                <button class="nav-btn" onclick="showProfile()">
+                    <i class="fas fa-user-md"></i> Perfil
+                </button>
+                <button class="nav-btn" onclick="showUsers()">
+                    <i class="fas fa-users"></i> Comunidade
+                </button>
+                <button class="nav-btn" onclick="showFeed()">
+                    <i class="fas fa-notes-medical"></i> Feed Saúde
+                </button>
+                <button class="nav-btn" onclick="showWellness()">
+                    <i class="fas fa-spa"></i> Bem-estar
+                </button>
+                <button class="nav-btn logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Login/Register Form -->
+        <div id="auth-section" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h1><i class="fas fa-heartbeat"></i> Gestar Bem</h1>
+                    <p>Sua comunidade de saúde e bem-estar</p>
+                    <div class="health-features">
+                        <span><i class="fas fa-stethoscope"></i> Profissionais Verificados</span>
+                        <span><i class="fas fa-shield-alt"></i> Informações Confiáveis</span>
+                        <span><i class="fas fa-users-medical"></i> Comunidade Saudável</span>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <div id="login-form" class="auth-form">
+                    <h2>Entrar na Comunidade</h2>
+                    <form onsubmit="login(event)">
+                        <div class="form-group">
+                            <label for="login-email"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="login-email" required placeholder="seu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password"><i class="fas fa-lock"></i> Senha</label>
+                            <input type="password" id="login-password" required placeholder="Sua senha segura">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Entrar
+                        </button>
+                    </form>
+                    <p class="auth-switch">
+                        Novo na comunidade? <a href="#" onclick="showRegister()">Junte-se a nós</a>
+                    </p>
+                </div>
+
+                <!-- Register Form -->
+                <div id="register-form" class="auth-form" style="display: none;">
+                    <h2>Junte-se à Comunidade</h2>
+                    <form onsubmit="register(event)">
+                        <div class="form-group">
+                            <label for="register-name"><i class="fas fa-user"></i> Nome Completo</label>
+                            <input type="text" id="register-name" required placeholder="Seu nome completo">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-nick"><i class="fas fa-at"></i> Nome de Usuário</label>
+                            <input type="text" id="register-nick" required placeholder="@seunome">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="register-email" required placeholder="seu@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password"><i class="fas fa-lock"></i> Senha</label>
+                            <input type="password" id="register-password" required placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-type"><i class="fas fa-user-tag"></i> Tipo de Perfil</label>
+                            <select id="register-type" required>
+                                <option value="">Selecione seu perfil</option>
+                                <option value="paciente">👤 Paciente/Usuário</option>
+                                <option value="profissional">👨‍⚕️ Profissional de Saúde</option>
+                                <option value="cuidador">🤝 Cuidador/Familiar</option>
+                                <option value="estudante">📚 Estudante da Área</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Criar Conta
+                        </button>
+                    </form>
+                    <p class="auth-switch">
+                        Já faz parte? <a href="#" onclick="showLogin()">Entre aqui</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Content -->
+        <div id="app-content" style="display: none;">
+            <!-- Home Section -->
+            <div id="home-section" class="section">
+                <div class="welcome-card health-welcome">
+                    <h2><i class="fas fa-heartbeat"></i> Bem-vindo ao Gestar Bem</h2>
+                    <p>Sua comunidade de saúde e bem-estar. Conecte-se, aprenda e cuide-se melhor.</p>
+                    
+                    <!-- Health Stats -->
+                    <div class="stats-grid health-stats">
+                        <div class="stat-card health-stat">
+                            <i class="fas fa-users-medical"></i>
+                            <div>
+                                <h3 id="total-users">0</h3>
+                                <p>Membros da Comunidade</p>
+                            </div>
+                        </div>
+                        <div class="stat-card health-stat">
+                            <i class="fas fa-user-md"></i>
+                            <div>
+                                <h3 id="professionals-count">0</h3>
+                                <p>Profissionais Verificados</p>
+                            </div>
+                        </div>
+                        <div class="stat-card health-stat">
+                            <i class="fas fa-notes-medical"></i>
+                            <div>
+                                <h3 id="posts-count">0</h3>
+                                <p>Conteúdos de Saúde</p>
+                            </div>
+                        </div>
+                        <div class="stat-card health-stat">
+                            <i class="fas fa-heart"></i>
+                            <div>
+                                <h3 id="interactions-count">0</h3>
+                                <p>Interações Positivas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h3><i class="fas fa-bolt"></i> Ações Rápidas</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="showCreateHealthPost()">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Compartilhar Dica</span>
+                            </button>
+                            <button class="action-btn" onclick="showHealthResources()">
+                                <i class="fas fa-book-medical"></i>
+                                <span>Recursos de Saúde</span>
+                            </button>
+                            <button class="action-btn" onclick="showEmergencyContacts()">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>Contatos de Emergência</span>
+                            </button>
+                            <button class="action-btn" onclick="showWellnessTracker()">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Acompanhar Bem-estar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section" style="display: none;">
+                <div class="profile-card health-profile">
+                    <div class="profile-header">
+                        <div class="profile-avatar" onclick="openPhotoUpload()">
+                            <img id="profile-photo" src="" alt="Foto de Perfil" style="display: none; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; cursor: pointer;">
+                            <i id="profile-icon" class="fas fa-user-circle" style="cursor: pointer;"></i>
+                            <div class="photo-overlay">
+                                <i class="fas fa-camera"></i>
+                                <span>Alterar Foto</span>
+                            </div>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profile-name">Carregando...</h2>
+                            <p id="profile-email">email@exemplo.com</p>
+                            <p id="profile-nick">@nickname</p>
+                            <div class="profile-badges">
+                                <span class="badge badge-user">👤 Usuário</span>
+                                <!-- Badges dinâmicos serão adicionados aqui -->
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="editProfile()">
+                            <i class="fas fa-edit"></i> Editar Perfil
+                        </button>
+                    </div>
+
+                    <!-- Health Profile Stats -->
+                    <div class="health-profile-stats">
+                        <div class="health-stat-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Membro desde</span>
+                            <strong id="member-since">2024</strong>
+                        </div>
+                        <div class="health-stat-item">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>Contribuições úteis</span>
+                            <strong id="helpful-posts">0</strong>
+                        </div>
+                        <div class="health-stat-item">
+                            <i class="fas fa-award"></i>
+                            <span>Nível de confiança</span>
+                            <strong id="trust-level">Iniciante</strong>
+                        </div>
+                    </div>
+
+                    <!-- Upload Photo Form -->
+                    <div id="photo-upload-form" class="card" style="display: none;">
+                        <h3><i class="fas fa-camera"></i> Alterar Foto de Perfil</h3>
+                        <form onsubmit="uploadPhoto(event)" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="photo-input">Escolher Foto</label>
+                                <input type="file" id="photo-input" accept="image/*" required onchange="previewPhoto(event)">
+                                <small>Formatos aceitos: JPG, PNG, GIF (máximo 10MB)</small>
+                            </div>
+                            <div id="photo-preview" class="photo-preview" style="display: none;">
+                                <img id="preview-image" src="" alt="Preview">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload"></i> Fazer Upload
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelPhotoUpload()">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Edit Profile Form -->
+                <div id="edit-profile-form" class="card" style="display: none;">
+                    <h3><i class="fas fa-edit"></i> Editar Perfil</h3>
+                    <form onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label for="edit-name">Nome</label>
+                            <input type="text" id="edit-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-nick">Apelido</label>
+                            <input type="text" id="edit-nick" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-email">Email</label>
+                            <input type="email" id="edit-email" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="deleteAccount()">
+                                <i class="fas fa-trash"></i> Excluir Conta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="section" style="display: none;">
+                <div class="users-header">
+                    <h2><i class="fas fa-users"></i> Comunidade de Saúde</h2>
+                    <div class="search-bar">
+                        <input type="text" id="user-search" placeholder="Buscar profissionais, especialidades...">
+                        <button onclick="searchUsers()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="user-filters">
+                        <button class="filter-btn active" onclick="filterUsers('all')">
+                            <i class="fas fa-users"></i> Todos
+                        </button>
+                        <button class="filter-btn" onclick="filterUsers('profissional')">
+                            <i class="fas fa-user-md"></i> Profissionais
+                        </button>
+                        <button class="filter-btn" onclick="filterUsers('paciente')">
+                            <i class="fas fa-user"></i> Pacientes
+                        </button>
+                        <button class="filter-btn" onclick="filterUsers('cuidador')">
+                            <i class="fas fa-hands-helping"></i> Cuidadores
+                        </button>
+                    </div>
+                </div>
+                <div id="users-list" class="users-grid">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Feed Section -->
+            <div id="feed-section" class="section" style="display: none;">
+                <div class="feed-header">
+                    <h2><i class="fas fa-notes-medical"></i> Feed de Saúde</h2>
+                    <button class="btn btn-primary" onclick="showCreatePost()">
+                        <i class="fas fa-plus"></i> Compartilhar Conteúdo
+                    </button>
+                </div>
+
+                <!-- Create Post Form -->
+                <div id="create-post-form" class="card health-post-form" style="display: none;">
+                    <h3><i class="fas fa-edit"></i> Compartilhar Conteúdo de Saúde</h3>
+                    <form onsubmit="createPost(event)">
+                        <div class="form-group">
+                            <label for="post-category"><i class="fas fa-tags"></i> Categoria</label>
+                            <select id="post-category" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="dica">💡 Dica de Saúde</option>
+                                <option value="experiencia">📝 Experiência Pessoal</option>
+                                <option value="pergunta">❓ Pergunta</option>
+                                <option value="recurso">📚 Recurso Educativo</option>
+                                <option value="emergencia">🚨 Informação de Emergência</option>
+                                <option value="prevencao">🛡️ Prevenção</option>
+                                <option value="bem-estar">🧘 Bem-estar Mental</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="post-title"><i class="fas fa-heading"></i> Título</label>
+                            <input type="text" id="post-title" required maxlength="100" placeholder="Título claro e informativo">
+                        </div>
+                        <div class="form-group">
+                            <label for="post-content"><i class="fas fa-align-left"></i> Conteúdo</label>
+                            <textarea id="post-content" rows="6" required maxlength="1000" placeholder="Compartilhe informações úteis e confiáveis..."></textarea>
+                            <small>Lembre-se: compartilhe apenas informações verificadas e não substitua consultas médicas.</small>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="post-disclaimer" required>
+                                Confirmo que as informações são para fins educativos e não substituem orientação médica profissional
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Compartilhar
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelCreatePost()">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Posts List -->
+                <div id="posts-list" class="posts-container">
+                    <!-- Posts will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Wellness Section -->
+            <div id="wellness-section" class="section" style="display: none;">
+                <div class="wellness-header">
+                    <h2><i class="fas fa-spa"></i> Centro de Bem-estar</h2>
+                    <p>Ferramentas e recursos para cuidar da sua saúde mental e física</p>
+                </div>
+
+                <div class="wellness-grid">
+                    <!-- Mood Tracker -->
+                    <div class="wellness-card">
+                        <h3><i class="fas fa-smile"></i> Acompanhar Humor</h3>
+                        <p>Registre como você se sente hoje</p>
+                        <div class="mood-selector">
+                            <button class="mood-btn" data-mood="excelente">😄</button>
+                            <button class="mood-btn" data-mood="bom">😊</button>
+                            <button class="mood-btn" data-mood="neutro">😐</button>
+                            <button class="mood-btn" data-mood="ruim">😔</button>
+                            <button class="mood-btn" data-mood="pessimo">😢</button>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="saveMood()">
+                            <i class="fas fa-save"></i> Registrar
+                        </button>
+                    </div>
+
+                    <!-- Water Tracker -->
+                    <div class="wellness-card">
+                        <h3><i class="fas fa-tint"></i> Hidratação</h3>
+                        <p>Meta diária: 8 copos de água</p>
+                        <div class="water-progress">
+                            <div class="water-counter">
+                                <span id="water-count">0</span>/8 copos
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="water-progress"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="addWater()">
+                            <i class="fas fa-plus"></i> +1 Copo
+                        </button>
+                    </div>
+
+                    <!-- Exercise Tracker -->
+                    <div class="wellness-card">
+                        <h3><i class="fas fa-running"></i> Atividade Física</h3>
+                        <p>Meta: 30 min por dia</p>
+                        <div class="exercise-log">
+                            <input type="number" id="exercise-minutes" placeholder="Minutos" min="0" max="300">
+                            <select id="exercise-type">
+                                <option value="">Tipo de atividade</option>
+                                <option value="caminhada">🚶 Caminhada</option>
+                                <option value="corrida">🏃 Corrida</option>
+                                <option value="yoga">🧘 Yoga</option>
+                                <option value="academia">💪 Academia</option>
+                                <option value="natacao">🏊 Natação</option>
+                                <option value="ciclismo">🚴 Ciclismo</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="logExercise()">
+                            <i class="fas fa-plus"></i> Registrar
+                        </button>
+                    </div>
+
+                    <!-- Meditation -->
+                    <div class="wellness-card">
+                        <h3><i class="fas fa-leaf"></i> Meditação</h3>
+                        <p>Pratique mindfulness</p>
+                        <div class="meditation-timer">
+                            <div class="timer-display" id="meditation-timer">05:00</div>
+                            <div class="timer-controls">
+                                <button class="btn btn-secondary btn-sm" onclick="setMeditationTime(5)">5min</button>
+                                <button class="btn btn-secondary btn-sm" onclick="setMeditationTime(10)">10min</button>
+                                <button class="btn btn-secondary btn-sm" onclick="setMeditationTime(15)">15min</button>
+                            </div>
+                            <button class="btn btn-primary" id="meditation-btn" onclick="toggleMeditation()">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="wellness-card emergency-card">
+                        <h3><i class="fas fa-phone-alt"></i> Emergência</h3>
+                        <p>Contatos importantes</p>
+                        <div class="emergency-contacts">
+                            <a href="tel:192" class="emergency-btn">
+                                <i class="fas fa-ambulance"></i> SAMU - 192
+                            </a>
+                            <a href="tel:188" class="emergency-btn">
+                                <i class="fas fa-heart"></i> CVV - 188
+                            </a>
+                            <a href="tel:180" class="emergency-btn">
+                                <i class="fas fa-shield-alt"></i> Disque Saúde - 136
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Health Resources -->
+                    <div class="wellness-card">
+                        <h3><i class="fas fa-book-medical"></i> Recursos</h3>
+                        <p>Informações confiáveis</p>
+                        <div class="resource-links">
+                            <a href="#" class="resource-link" onclick="showHealthTips()">
+                                <i class="fas fa-lightbulb"></i> Dicas de Saúde
+                            </a>
+                            <a href="#" class="resource-link" onclick="showFirstAid()">
+                                <i class="fas fa-first-aid"></i> Primeiros Socorros
+                            </a>
+                            <a href="#" class="resource-link" onclick="showHealthyRecipes()">
+                                <i class="fas fa-utensils"></i> Receitas Saudáveis
+                            </a>
+                            <a href="#" class="resource-link" onclick="showMentalHealth()">
+                                <i class="fas fa-brain"></i> Saúde Mental
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Confirmation Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Confirmar Ação</h3>
+            <p id="modal-message">Tem certeza que deseja continuar?</p>
+            <div class="modal-actions">
+                <button id="modal-confirm" class="btn btn-danger">Confirmar</button>
+                <button id="modal-cancel" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

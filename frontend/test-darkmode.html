@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Dark Mode</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --text-primary: #333333;
+        }
+
+        html[data-theme="dark"] {
+            --bg-primary: #1a1a1a !important;
+            --text-primary: #ffffff !important;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-primary);
+            border: 2px solid var(--text-primary);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="icon">🌙</span>
+        <span class="text">Dark Mode</span>
+    </div>
+
+    <h1>Teste do Dark Mode</h1>
+    <p>Clique no botão no canto superior direito para alternar entre os modos claro e escuro.</p>
+    <p>Se você conseguir ver esta mudança, o Dark Mode está funcionando!</p>
+
+    <script>
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            console.log('Initializing theme:', savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeToggle(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            console.log('Toggling theme from', currentTheme, 'to', newTheme);
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggle(newTheme);
+        }
+
+        function updateThemeToggle(theme) {
+            const toggle = document.querySelector('.theme-toggle');
+            const icon = toggle.querySelector('.icon');
+            const text = toggle.querySelector('.text');
+            
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark Mode';
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+    </script>
+</body>
+</html> 
