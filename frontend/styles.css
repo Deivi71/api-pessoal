@@ -2233,4 +2233,25 @@ html[data-theme="dark"] .resource-link:hover {
     .timer-controls {
         flex-wrap: wrap;
     }
+}
+
+/* Ajuste de contraste para cards no modo light */
+html:not([data-theme="dark"]) .card,
+html:not([data-theme="dark"]) .welcome-card,
+html:not([data-theme="dark"]) .profile-card,
+html:not([data-theme="dark"]) .stat-card {
+    color: #222 !important;
+    background: #fff !important;
+}
+
+html:not([data-theme="dark"]) .stat-card {
+    background: linear-gradient(135deg, #e9e9ff 0%, #f3eaff 100%) !important;
+    color: #222 !important;
+}
+
+html:not([data-theme="dark"]) .stat-card h3,
+html:not([data-theme="dark"]) .stat-card p,
+html:not([data-theme="dark"]) .welcome-card h2,
+html:not([data-theme="dark"]) .welcome-card p {
+    color: #222 !important;
 } 
