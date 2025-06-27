@@ -2254,4 +2254,237 @@ html:not([data-theme="dark"]) .stat-card p,
 html:not([data-theme="dark"]) .welcome-card h2,
 html:not([data-theme="dark"]) .welcome-card p {
     color: #222 !important;
+}
+
+/* Ajuste para títulos e subtítulos do Centro de Bem-estar no modo light */
+html:not([data-theme="dark"]) .wellness-header h2 {
+    color: #222 !important;
+    font-weight: bold;
+    text-shadow: 0 1px 4px rgba(255,255,255,0.2);
+}
+
+html:not([data-theme="dark"]) .wellness-header p {
+    color: #444 !important;
+    text-shadow: 0 1px 4px rgba(255,255,255,0.2);
+}
+
+/* Featured Post Section */
+.featured-post-section {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.featured-post-section h3 {
+    color: white;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.featured-post-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featured-post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.featured-post-loading {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+}
+
+.featured-post-loading i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #667eea;
+}
+
+.featured-post-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.featured-post-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.featured-post-author-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.featured-post-author-info h4 {
+    margin: 0;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.featured-post-author-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.featured-post-badge {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-left: auto;
+}
+
+.featured-post-title {
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.featured-post-excerpt {
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.featured-post-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.featured-post-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.featured-post-stat i {
+    color: #667eea;
+}
+
+.featured-post-stat.curtidas {
+    color: #e74c3c;
+}
+
+.featured-post-stat.curtidas i {
+    color: #e74c3c;
+}
+
+.featured-post-stat.comentarios {
+    color: #28a745;
+}
+
+.featured-post-stat.comentarios i {
+    color: #28a745;
+}
+
+.featured-post-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.featured-post-actions .btn {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+.no-featured-post {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* Dark mode adjustments for featured post */
+html[data-theme="dark"] .featured-post-card {
+    background: rgba(26, 26, 26, 0.95) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html[data-theme="dark"] .featured-post-author-info h4 {
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .featured-post-author-info p {
+    color: #cccccc !important;
+}
+
+html[data-theme="dark"] .featured-post-title {
+    color: #ffffff !important;
+}
+
+html[data-theme="dark"] .featured-post-excerpt {
+    color: #e0e0e0 !important;
+}
+
+html[data-theme="dark"] .featured-post-stats {
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+html[data-theme="dark"] .featured-post-stat {
+    color: #cccccc !important;
+}
+
+html[data-theme="dark"] .no-featured-post {
+    color: #999999 !important;
+}
+
+/* Responsive design for featured post */
+@media (max-width: 768px) {
+    .featured-post-section {
+        padding: 1rem;
+        margin: 1.5rem 0;
+    }
+    
+    .featured-post-card {
+        padding: 1rem;
+    }
+    
+    .featured-post-stats {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .featured-post-actions {
+        flex-direction: column;
+    }
 } 

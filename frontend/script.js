@@ -1,7 +1,7 @@
 // API Configuration
 const API_BASE_URL = 'http://localhost:5000'; // Ajuste para a porta da sua API
 let currentUser = null;
-let authToken = null;
+let authToken = localStorage.getItem('authToken') || null;
 let followingUsersCache = new Set(); // Cache dos IDs dos usuários seguidos
 
 // Dark Mode Functions
@@ -400,13 +400,16 @@ function setActiveNavButton(index) {
 async function loadDashboardStats() {
     try {
         const users = await apiRequest('/usuarios');
-        document.getElementById('total-users').textContent = users.length || 0;
+        const totalUsersEl = document.getElementById('total-users');
+        if (totalUsersEl) totalUsersEl.textContent = users.length || 0;
         
         // Buscar estatísticas do usuário atual
         if (currentUser && currentUser.id) {
             const stats = await apiRequest(`/usuarios/${currentUser.id}/estatisticas`);
-            document.getElementById('following-count').textContent = stats.seguindo || 0;
-            document.getElementById('followers-count').textContent = stats.seguidores || 0;
+            const followingCountEl = document.getElementById('following-count');
+            const followersCountEl = document.getElementById('followers-count');
+            if (followingCountEl) followingCountEl.textContent = stats.seguindo || 0;
+            if (followersCountEl) followersCountEl.textContent = stats.seguidores || 0;
         } else {
             // Tentar carregar do localStorage
             const storedUser = localStorage.getItem('currentUser');
@@ -414,19 +417,25 @@ async function loadDashboardStats() {
                 currentUser = JSON.parse(storedUser);
                 if (currentUser && currentUser.id) {
                     const stats = await apiRequest(`/usuarios/${currentUser.id}/estatisticas`);
-                    document.getElementById('following-count').textContent = stats.seguindo || 0;
-                    document.getElementById('followers-count').textContent = stats.seguidores || 0;
+                    const followingCountEl = document.getElementById('following-count');
+                    const followersCountEl = document.getElementById('followers-count');
+                    if (followingCountEl) followingCountEl.textContent = stats.seguindo || 0;
+                    if (followersCountEl) followersCountEl.textContent = stats.seguidores || 0;
                     return;
                 }
             }
-            document.getElementById('following-count').textContent = '0';
-            document.getElementById('followers-count').textContent = '0';
+            const followingCountEl = document.getElementById('following-count');
+            const followersCountEl = document.getElementById('followers-count');
+            if (followingCountEl) followingCountEl.textContent = '0';
+            if (followersCountEl) followersCountEl.textContent = '0';
         }
     } catch (error) {
         console.error('Error loading dashboard stats:', error);
         // Em caso de erro, manter valores padrão
-        document.getElementById('following-count').textContent = '0';
-        document.getElementById('followers-count').textContent = '0';
+        const followingCountEl = document.getElementById('following-count');
+        const followersCountEl = document.getElementById('followers-count');
+        if (followingCountEl) followingCountEl.textContent = '0';
+        if (followersCountEl) followersCountEl.textContent = '0';
     }
 }
 
@@ -1799,3 +1808,125 @@ document.addEventListener('DOMContentLoaded', function() {
         // The wellness button is already in the HTML
     }
 });
+
+// Load featured post (post with most reactions)
+async function loadFeaturedPost() {
+    try {
+        const response = await apiRequest('/publicacoes/feed');
+        if (response && response.length > 0) {
+            // Find the post with most reactions (curtidas + comentarios)
+            const featuredPost = response.reduce((prev, current) => {
+                const prevTotal = (prev.curtidas || 0) + (prev.comentarios || 0);
+                const currentTotal = (current.curtidas || 0) + (current.comentarios || 0);
+                return currentTotal > prevTotal ? current : prev;
+            });
+            
+            displayFeaturedPost(featuredPost);
+        } else {
+            displayNoFeaturedPost();
+        }
+    } catch (error) {
+        console.error('Erro ao carregar publicação em destaque:', error);
+        displayNoFeaturedPost();
+    }
+}
+
+function displayFeaturedPost(post) {
+    const featuredPostContainer = document.getElementById('featured-post');
+    
+    const authorInitial = post.AutorNome ? post.AutorNome.charAt(0).toUpperCase() : 'U';
+    const excerpt = post.Conteudo.length > 150 ? post.Conteudo.substring(0, 150) + '...' : post.Conteudo;
+    
+    featuredPostContainer.innerHTML = `
+        <div class="featured-post-content">
+            <div class="featured-post-header">
+                <div class="featured-post-author-avatar">
+                    ${authorInitial}
+                </div>
+                <div class="featured-post-author-info">
+                    <h4>${post.AutorNome || 'Usuário'}</h4>
+                    <p>@${post.AutorNick || 'usuario'}</p>
+                </div>
+                <div class="featured-post-badge">
+                    ⭐ Destaque
+                </div>
+            </div>
+            
+            <div class="featured-post-title">${post.Titulo}</div>
+            <div class="featured-post-excerpt">${excerpt}</div>
+            
+            <div class="featured-post-stats">
+                <div class="featured-post-stat curtidas">
+                    <i class="fas fa-heart"></i>
+                    <span>${post.curtidas || 0} curtidas</span>
+                </div>
+                <div class="featured-post-stat comentarios">
+                    <i class="fas fa-comment"></i>
+                    <span>${post.comentarios || 0} comentários</span>
+                </div>
+                <div class="featured-post-stat">
+                    <i class="fas fa-calendar"></i>
+                    <span>${formatDate(post.CriadoEm)}</span>
+                </div>
+            </div>
+            
+            <div class="featured-post-actions">
+                <button class="btn btn-primary" onclick="showFeed()">
+                    <i class="fas fa-eye"></i> Ver Completo
+                </button>
+                <button class="btn btn-secondary" onclick="likePost(${post.ID})">
+                    <i class="fas fa-heart"></i> Curtir
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function displayNoFeaturedPost() {
+    const featuredPostContainer = document.getElementById('featured-post');
+    featuredPostContainer.innerHTML = `
+        <div class="no-featured-post">
+            <i class="fas fa-star" style="font-size: 2rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <p>Nenhuma publicação em destaque ainda.</p>
+            <p>Seja o primeiro a compartilhar conteúdo valioso!</p>
+            <button class="btn btn-primary" onclick="showCreatePost()" style="margin-top: 1rem;">
+                <i class="fas fa-plus"></i> Criar Publicação
+            </button>
+        </div>
+    `;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'Data não disponível';
+    
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Agora mesmo';
+    if (diffInHours < 24) return `${diffInHours}h atrás`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d atrás`;
+    
+    return date.toLocaleDateString('pt-BR');
+}
+
+// Enhanced showHome function to include featured post
+async function showHome() {
+    hideAllSections();
+    document.getElementById('home-section').style.display = 'block';
+    setActiveNavButton(0);
+    
+    try {
+        await Promise.all([
+            loadDashboardStats(),
+            loadFeaturedPost() // Load featured post
+        ]);
+    } catch (error) {
+        console.error('Erro ao carregar dados da home:', error);
+    }
+}
+
+// Update the existing showHome function call
+window.showHome = showHome;

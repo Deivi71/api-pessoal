@@ -18,6 +18,7 @@ type Usuario struct {
 	Senha      string    `json:"senha,omitempty"`
 	FotoPerfil string    `json:"foto_perfil,omitempty"`
 	CriadoEm   time.Time `json:"criadoem,omitempty"`
+	Tipo       string    `json:"tipo,omitempty"`
 }
 
 func (Usuario *Usuario) Preparar(etapa string) error {
